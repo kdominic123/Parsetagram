@@ -6,6 +6,7 @@
 //  Copyright © 2017 Kenan Dominic. All rights reserved.
 //
 
+import Parse
 import UIKit
 
 @UIApplicationMain
@@ -16,6 +17,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        Parse.initialize(
+            with: ParseClientConfiguration(block: { (configuration:ParseMutableClientConfiguration) -> Void in
+                configuration.applicationId = "Parsetagram"
+                configuration.clientKey = "svkjbdsaflshfblcxuiefbfdsliu"
+                configuration.server = "https://serene-scrubland-80389.herokuapp.com/parse"
+            })
+        )
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "UserDidLogout"), object: nil, queue: OperationQueue.main) { (Notification) in
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateInitialViewController()
+            self.window?.rootViewController = vc
+        }
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: "UserDidPost"), object: nil, queue: OperationQueue.main) { (Notification) in
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "tabBarController")
+            self.window?.rootViewController = vc
+        }
+        
+        if PFUser.current() != nil {
+            
+            print("There is a current user")
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "tabBarController")
+            window?.rootViewController = viewController
+        }
         return true
     }
 
